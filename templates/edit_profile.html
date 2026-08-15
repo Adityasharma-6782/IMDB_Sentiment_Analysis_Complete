@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Edit profile — ReelTake{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<section class="auth-wrap wrap">
+  <div class="auth-card wide">
+    <p class="eyebrow">Account settings</p>
+    <h1>Edit your profile</h1>
+
+    <form method="POST" class="auth-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" value="{{ user.username }}" required minlength="3" maxlength="20">
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ user.email }}" required>
+
+      <label for="favorite_genre">Favorite genre <span class="field-optional">(optional)</span></label>
+      <input type="text" id="favorite_genre" name="favorite_genre" value="{{ user.favorite_genre or '' }}" maxlength="40" placeholder="e.g. neo-noir, courtroom drama">
+
+      <label for="bio">Bio <span class="field-optional">(optional)</span></label>
+      <textarea id="bio" name="bio" rows="3" maxlength="280" placeholder="A sentence or two about your taste in film.">{{ user.bio or '' }}</textarea>
+
+      <hr class="form-divider">
+      <p class="field-hint">Leave the password fields blank to keep your current password.</p>
+
+      <label for="current_password">Current password</label>
+      <input type="password" id="current_password" name="current_password" autocomplete="current-password">
+
+      <label for="new_password">New password</label>
+      <input type="password" id="new_password" name="new_password" autocomplete="new-password" minlength="8">
+
+      <div class="form-row-between">
+        <a href="{{ url_for('main.profile') }}" class="btn btn-ghost">Cancel</a>
+        <button type="submit" class="btn btn-gold">Save changes</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

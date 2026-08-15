@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}About — ReelTake{% endblock %}
+{% block body_class %}page-about{% endblock %}
+
+{% block content %}
+<section class="about-hero wrap">
+  <p class="eyebrow">The projection booth</p>
+  <h1>What's actually happening when you hit "print my stub"</h1>
+  <p class="hero-sub">
+    No magic, no black box you have to trust blindly — here's the reel, start to finish.
+  </p>
+</section>
+
+<section class="about-grid wrap">
+  <div class="about-card">
+    <span class="about-num">01</span>
+    <h3>The training set</h3>
+    <p>
+      The model learned from 25,000 real movie reviews, split evenly between positive
+      and negative, pulled from a public IMDB dataset. Nothing synthetic, nothing hand-picked.
+    </p>
+  </div>
+  <div class="about-card">
+    <span class="about-num">02</span>
+    <h3>Cleaning the text</h3>
+    <p>
+      Before anything is analyzed, review text is lowercased, stripped of HTML tags and
+      URLs, cleared of punctuation and common filler words (stopwords), then reduced to
+      word stems — so "loved," "loving," and "loves" all count the same.
+    </p>
+  </div>
+  <div class="about-card">
+    <span class="about-num">03</span>
+    <h3>Turning words into numbers</h3>
+    <p>
+      The cleaned text is converted into a TF-IDF vector — a weighting scheme that
+      cares more about words that are distinctive to a review than words that show
+      up everywhere.
+    </p>
+  </div>
+  <div class="about-card">
+    <span class="about-num">04</span>
+    <h3>The verdict</h3>
+    <p>
+      A logistic regression classifier, trained on those vectors, outputs a probability.
+      Above 50% positive and the stub reads POSITIVE; otherwise, NEGATIVE. The confidence
+      score is just that probability.
+    </p>
+  </div>
+</section>
+
+{% if metrics.get('accuracy') %}
+<section class="about-stats wrap">
+  <div class="stat-block">
+    <span class="stat-num">{{ (metrics.accuracy * 100) | round(1) }}%</span>
+    <span class="stat-label">Accuracy on held-out reviews</span>
+  </div>
+  <div class="stat-block">
+    <span class="stat-num">{{ '{:,}'.format(metrics.n_train) }}</span>
+    <span class="stat-label">Reviews used for training</span>
+  </div>
+  <div class="stat-block">
+    <span class="stat-num">{{ '{:,}'.format(metrics.n_test) }}</span>
+    <span class="stat-label">Reviews held back for testing</span>
+  </div>
+</section>
+{% endif %}
+
+<section class="about-honest wrap">
+  <h2>Where it falls short</h2>
+  <p>
+    It's a linear model reading word patterns, not a person reading for tone — sarcasm,
+    mixed reviews, and heavy plot summaries with little opinion can trip it up. Treat the
+    verdict as a fast first read, not a substitute for actually reading the review.
+  </p>
+</section>
+{% endblock %}

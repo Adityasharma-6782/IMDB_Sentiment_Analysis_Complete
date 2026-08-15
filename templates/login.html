@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sign in — ReelTake{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<section class="auth-wrap wrap">
+  <div class="auth-card">
+    <p class="eyebrow">Box office</p>
+    <h1>Welcome back</h1>
+    <p class="auth-sub">Sign in to pick up where you left off.</p>
+
+    <form method="POST" class="auth-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <label for="identifier">Email or username</label>
+      <input type="text" id="identifier" name="identifier" value="{{ identifier or '' }}" autocomplete="username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+      <div class="form-row-between small-links">
+        <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-full">Sign in</button>
+    </form>
+
+    <p class="auth-switch">New here? <a href="{{ url_for('auth.signup') }}">Get a ticket</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Analyzer — ReelTake{% endblock %}
+{% block body_class %}page-home{% endblock %}
+
+{% block content %}
+<section class="wrap analyzer-layout">
+  <div class="analyzer-main">
+    <p class="eyebrow">Screening room</p>
+    <h1>Paste a review, get the verdict.</h1>
+
+    <form method="POST" class="review-form" id="reviewForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="review_text">Review text</label>
+      <textarea
+        id="review_text"
+        name="review_text"
+        rows="8"
+        maxlength="4000"
+        placeholder="e.g. &quot;The pacing dragged in the second act, but the ending redeemed everything...&quot;"
+        required
+      >{{ request.form.get('review_text', '') }}</textarea>
+      <div class="form-row-between">
+        <span class="char-counter"><span id="charCount">0</span> / 4000</span>
+        <button type="submit" class="btn btn-gold">Print my stub</button>
+      </div>
+    </form>
+
+    {% if result %}
+    <div class="ticket-stub result-stub reveal">
+      <div class="stub-top">
+        <span class="stub-label">Admit One</span>
+        <span class="stub-serial">NO. {{ '%06d'|format(range(100000,999999)|random) }}</span>
+      </div>
+      <div class="stub-perf"></div>
+      <div class="stub-body">
+        <p class="stub-quote">&ldquo;{{ result.clean_text[:140] }}{{ '…' if result.clean_text|length > 140 else '' }}&rdquo;</p>
+        <div class="stub-verdict verdict-{{ result.label }}">
+          <span class="verdict-label">Verdict</span>
+          <span class="verdict-value">{{ 'POSITIVE' if result.label == 'pos' else 'NEGATIVE' }}</span>
+        </div>
+        <div class="stub-meta">
+          <span>CONFIDENCE</span>
+          <span class="mono">{{ result.confidence }}%</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <aside class="analyzer-history">
+    <h2>Your recent stubs</h2>
+    {% if history %}
+      <ul class="history-list">
+        {% for item in history %}
+          <li class="history-item verdict-border-{{ item.label }}">
+            <p class="history-snippet">{{ item.text[:90] }}{{ '…' if item.text|length > 90 else '' }}</p>
+            <div class="history-meta">
+              <span class="history-tag tag-{{ item.label }}">{{ 'Positive' if item.label == 'pos' else 'Negative' }}</span>
+              <span class="mono">{{ item.confidence }}%</span>
+            </div>
+            <form method="POST" action="{{ url_for('main.delete_history_item', item_id=item._id) }}" class="history-remove">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" aria-label="Remove">&times;</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-note">No stubs printed yet — analyze a review and it'll show up here.</p>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const ta = document.getElementById('review_text');
+  const counter = document.getElementById('charCount');
+  function updateCount() { counter.textContent = ta.value.length; }
+  if (ta) { ta.addEventListener('input', updateCount); updateCount(); }
+</script>
+{% endblock %}

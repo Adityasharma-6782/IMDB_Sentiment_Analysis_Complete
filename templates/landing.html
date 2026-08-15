@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}ReelTake — know the verdict before you read the whole review{% endblock %}
+{% block body_class %}page-landing{% endblock %}
+
+{% block content %}
+<section class="hero wrap">
+  <div class="hero-copy">
+    <p class="eyebrow">Now showing</p>
+    <h1>Every review<br>has a verdict.<br><span class="accent">Find it in seconds.</span></h1>
+    <p class="hero-sub">
+      Paste any movie review — yours, a critic's, a friend's rant in the group chat —
+      and ReelTake reads between the lines to call it: thumbs up or thumbs down,
+      with a confidence score to back it up.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('auth.signup') }}" class="btn btn-gold btn-large">Get your ticket — it's free</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-large">I have an account</a>
+    </div>
+    {% if metrics.get('accuracy') %}
+    <p class="hero-stat">
+      Trained on 25,000 real reviews &middot;
+      <strong>{{ (metrics.accuracy * 100) | round(1) }}%</strong> accuracy on unseen data
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="ticket-stub demo-stub">
+      <div class="stub-top">
+        <span class="stub-label">Admit One</span>
+        <span class="stub-serial">NO. 018872</span>
+      </div>
+      <div class="stub-perf"></div>
+      <div class="stub-body">
+        <p class="stub-quote">&ldquo;A masterclass in pacing — I couldn't look away.&rdquo;</p>
+        <div class="stub-verdict verdict-pos">
+          <span class="verdict-label">Verdict</span>
+          <span class="verdict-value">POSITIVE</span>
+        </div>
+        <div class="stub-meta">
+          <span>CONFIDENCE</span>
+          <span class="mono">96.2%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works wrap">
+  <p class="eyebrow">How a screening works</p>
+  <div class="steps">
+    <div class="step">
+      <span class="step-index">Reel I</span>
+      <h3>Paste the review</h3>
+      <p>Drop in any block of review text — long-winded or a one-liner, both work.</p>
+    </div>
+    <div class="step">
+      <span class="step-index">Reel II</span>
+      <h3>We clean &amp; read it</h3>
+      <p>The text is stripped down to its meaningful words using the same pipeline the model trained on.</p>
+    </div>
+    <div class="step">
+      <span class="step-index">Reel III</span>
+      <h3>Get your stub</h3>
+      <p>A logistic regression model trained on TF-IDF features hands back a verdict and a confidence score.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-strip">
+  <div class="wrap cta-strip-row">
+    <h2>Ready to see what your review really says?</h2>
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-gold btn-large">Get a ticket</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Get a ticket — ReelTake{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<section class="auth-wrap wrap">
+  <div class="auth-card">
+    <p class="eyebrow">Box office</p>
+    <h1>Get your ticket</h1>
+    <p class="auth-sub">Free account, no fine print.</p>
+
+    <form method="POST" class="auth-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" value="{{ username or '' }}" autocomplete="username" required minlength="3" maxlength="20">
+      <p class="field-hint">3-20 characters: letters, numbers, dot or underscore.</p>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ email or '' }}" autocomplete="email" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="new-password" required minlength="8">
+      <p class="field-hint">At least 8 characters, with a letter and a number.</p>
+
+      <label for="confirm_password">Confirm password</label>
+      <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required minlength="8">
+
+      <button type="submit" class="btn btn-gold btn-full">Create my account</button>
+    </form>
+
+    <p class="auth-switch">Already have a ticket? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+  </div>
+</section>
+{% endblock %}

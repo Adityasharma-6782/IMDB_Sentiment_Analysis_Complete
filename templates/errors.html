@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} — ReelTake{% endblock %}
+{% block body_class %}page-error{% endblock %}
+
+{% block content %}
+<section class="wrap error-wrap">
+  <p class="eyebrow">Reel {{ code }}</p>
+  <h1>{{ message }}</h1>
+  <a href="{{ url_for('main.landing') }}" class="btn btn-gold">Back to the lobby</a>
+</section>
+{% endblock %}

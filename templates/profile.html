@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Your profile — ReelTake{% endblock %}
+{% block body_class %}page-profile{% endblock %}
+
+{% block content %}
+<section class="wrap profile-layout">
+  <div class="profile-card">
+    <div class="profile-avatar" aria-hidden="true">{{ user.username[:1] | upper }}</div>
+    <h1>{{ user.username }}</h1>
+    <p class="profile-email">{{ user.email }}</p>
+    {% if user.bio %}<p class="profile-bio">{{ user.bio }}</p>{% endif %}
+    {% if user.favorite_genre %}
+      <p class="profile-genre">Favorite genre: <strong>{{ user.favorite_genre }}</strong></p>
+    {% endif %}
+    <p class="profile-since">Member since {{ user.created_at.strftime('%B %Y') if user.created_at else '—' }}</p>
+    <a href="{{ url_for('main.edit_profile') }}" class="btn btn-outline">Edit profile</a>
+  </div>
+
+  <div class="profile-stats">
+    <h2>Your screening record</h2>
+    <div class="stat-row">
+      <div class="stat-block">
+        <span class="stat-num">{{ stats.total }}</span>
+        <span class="stat-label">Reviews analyzed</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-num verdict-text-pos">{{ stats.pos }}</span>
+        <span class="stat-label">Called positive</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-num verdict-text-neg">{{ stats.neg }}</span>
+        <span class="stat-label">Called negative</span>
+      </div>
+    </div>
+    <a href="{{ url_for('main.home') }}" class="btn btn-gold">Analyze another review</a>
+  </div>
+</section>
+{% endblock %}
