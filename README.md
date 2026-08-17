@@ -153,42 +153,30 @@ pip install mongomock
 python tests/test_smoke.py
 ```
 
-This runs 25 automated checks covering signup, login, predictions, profile edits, and more.
-
----
-
-## 📁 Project Structure
+## Project layout
 
 ```
-sentiment-app/
-├── app.py                  → Main entry point
-├── config.py                → Configuration settings
-├── extensions.py             → MongoDB connection setup
-├── auth_utils.py              → Authentication helper functions
-├── ml.py                       → Loads the ML model
-├── train_model.py               → Script to retrain the model (optional)
-├── nlp/text_clean.py             → Text cleaning logic
-├── blueprints/auth.py              → Login/signup/logout routes
-├── blueprints/main.py               → Analyzer/profile/about routes
-├── templates/                        → HTML pages
-├── static/css/style.css               → Styling
-├── static/js/main.js                   → Frontend interactions
-├── models/                              → Saved trained ML model
-├── requirements.txt                      → Python dependencies
-├── .env.example                           → Environment variable template
-└── tests/test_smoke.py                     → Automated tests
+app.py                 App factory / entry point
+config.py               Env-based configuration
+extensions.py            MongoDB connection + indexes
+auth_utils.py             Password hashing, login_required, CSRF, reset tokens
+ml.py                      Loads the trained model and exposes predict_sentiment()
+train_model.py              Script to (re)train the model from a CSV
+nlp/text_clean.py            Shared text-cleaning pipeline (used by training + app)
+blueprints/auth.py            signup / login / logout / forgot & reset password
+blueprints/main.py             landing / analyzer / about / profile / edit profile
+templates/                      Jinja templates
+static/css/style.css             Design system (cinema ticket-stub theme)
+static/js/main.js                 Small UI interactions
+models/                            Saved vectorizer.pkl + model.pkl
+nltk_data/                          Bundled NLTK data (stopwords, tokenizer)
+tests/test_smoke.py                  End-to-end route test using mongomock
 ```
 
----
+## Notes on security
 
-## ❓ Troubleshooting
-
-| Problem | Solution |
-|---|---|
-| `ModuleNotFoundError` | Make sure your virtual environment is activated and you ran `pip install -r requirements.txt` |
-| MongoDB connection error | Check that `mongod` is running (local) or your Atlas connection string is correct in `.env` |
-| Port 5000 already in use | Close other apps using that port, or change the port in `app.py` |
-| scikit-learn build error (Windows) | Use `pip install scikit-learn --only-binary :all:` before installing requirements |
-
----
-
+This is a learning/portfolio project, not a hardened production app. Before
+deploying anywhere public, at minimum: set a strong random `SECRET_KEY`,
+serve over HTTPS, add rate limiting on login/signup/forgot-password, and
+consider a proper CSRF library (Flask-WTF) and account lockout after repeated
+failed logins.
