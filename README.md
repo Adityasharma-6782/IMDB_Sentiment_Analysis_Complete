@@ -1,100 +1,194 @@
-# ReelTake
+# ReelTake — Movie Review Sentiment Analyzer
 
-A movie-review sentiment analyzer: paste a review, get a verdict (positive/negative)
-and a confidence score, styled as a printed cinema ticket stub. Built with Flask,
-scikit-learn (TF-IDF + Logistic Regression), and MongoDB for accounts.
+A web app where you paste a movie review and it tells you whether the sentiment is **positive** or **negative**, along with a confidence score — shown as a styled cinema "ticket stub." Built with Flask, MongoDB, and a machine learning model (TF-IDF + Logistic Regression).
 
-## Features
+---
 
-- Email/username + password signup and login (passwords hashed with Werkzeug)
-- Forgot password / reset password flow (token-based, expires after 30 min)
-- Profile page with bio, favorite genre, and your analysis history/stats
-- Edit profile (username, email, bio, password change)
-- The analyzer itself: paste a review, get a styled "ticket stub" verdict,
-  with your last 8 results saved to your account
-- About page that explains exactly how the model works and its accuracy
-- CSRF protection on every form, session-based auth, MongoDB indexes for
-  unique emails/usernames
+## 📌 Project Attribution & Transparency Note
 
-## 1. Prerequisites
+- **Backend** — Built independently by me: Flask app structure, MongoDB integration, authentication (signup/login/logout/forgot password), CSRF protection, session handling, and the full machine learning pipeline (text cleaning, TF-IDF vectorization, Logistic Regression model training).
+- **Frontend** — Built with AI assistance (Claude): HTML templates, CSS design (cinema ticket-stub theme), and JavaScript interactions, based on my requirements (sign in/signup, login, about, profile, edit profile, forgot password, logout).
 
-- Python 3.10+
-- A MongoDB instance — either:
-  - **Local**: install MongoDB Community Server and run `mongod`, or
-  - **Free cloud option**: create a free cluster at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) and grab its connection string
+This note exists purely for transparency about which parts were self-written vs. AI-assisted.
 
-## 2. Setup
+---
 
-```bash
+## ✅ Features
+
+- Sign up / Login / Logout with secure password hashing
+- Forgot password → Reset password flow (works even without an email server — shows a dev-mode reset link)
+- Profile page with bio, favorite genre, and analysis history
+- Edit profile (change username, email, password)
+- Movie review sentiment analyzer with confidence score
+- About page explaining how the model works
+- CSRF protection on all forms
+
+---
+
+## 🛠️ Prerequisites
+
+Before running this project, make sure you have:
+
+1. **Python 3.10, 3.11, or 3.12** installed (avoid very new versions like 3.13+ for now, since some ML libraries don't have ready-made installers for them yet)
+2. **MongoDB** — either:
+   - Install MongoDB Community Server on your own PC and run it locally, **or**
+   - Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) (no local install needed, works over internet)
+3. **pip** (comes with Python)
+
+To check your Python version, run:
+```
+python --version
+```
+
+---
+
+## 🚀 Step-by-Step Setup
+
+### Step 1: Extract the project
+Unzip the project folder anywhere on your system, then open a terminal/command prompt inside the `sentiment-app` folder.
+
+```
 cd sentiment-app
+```
+
+### Step 2: Create a virtual environment
+This keeps this project's packages separate from your other Python projects.
+
+```
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+```
+
+Activate it:
+
+- **Windows:**
+  ```
+  venv\Scripts\activate
+  ```
+- **Mac/Linux:**
+  ```
+  source venv/bin/activate
+  ```
+
+You'll know it worked if you see `(venv)` at the start of your terminal line.
+
+### Step 3: Install dependencies
+
+```
 pip install -r requirements.txt
-
-cp .env.example .env
-# then edit .env: set SECRET_KEY to a random string, and MONGO_URI to your
-# MongoDB connection string (the local default already works if you have
-# `mongod` running on localhost:27017)
 ```
 
-The trained model is already included in `models/` (trained on 25,000 IMDB
-reviews, ~87.6% test accuracy), so you don't have to retrain anything to run
-the app. If you want to retrain on your own data:
+This installs Flask, MongoDB driver (pymongo), scikit-learn, nltk, pandas, and everything else needed. This may take 2-5 minutes.
 
-```bash
-python train_model.py path/to/your_reviews.csv   # needs "text" and "sentiment" columns
+**⚠️ If you get a build/compiler error on Windows** (common with scikit-learn), try:
+```
+pip install --upgrade pip
+pip install scikit-learn --only-binary :all:
+pip install -r requirements.txt
+```
+This forces pip to use pre-built packages instead of trying to compile from source.
+
+### Step 4: Set up MongoDB
+
+**Option A — Local MongoDB:**
+Install MongoDB Community Server, then run `mongod` in a separate terminal window. Leave that terminal open while using the app.
+
+**Option B — MongoDB Atlas (easier, no install):**
+1. Sign up at MongoDB Atlas (free tier)
+2. Create a free cluster
+3. Under "Database Access," create a username/password
+4. Under "Network Access," allow access from anywhere (0.0.0.0/0) for testing
+5. Click "Connect" → "Connect your application" → copy the connection string
+
+### Step 5: Create your `.env` file
+
+Copy `.env.example` and rename the copy to `.env`:
+
+```
+copy .env.example .env      (Windows)
+cp .env.example .env        (Mac/Linux)
 ```
 
-## 3. Run it
+Open `.env` in any text editor and fill in:
+- `SECRET_KEY` → any random long string (e.g., mash your keyboard)
+- `MONGO_URI` →
+  - If using local MongoDB: leave as `mongodb://localhost:27017`
+  - If using Atlas: paste your connection string here
 
-```bash
+### Step 6: Run the app
+
+```
 python app.py
 ```
 
-Visit **http://localhost:5000**.
+You should see something like:
+```
+Running on http://127.0.0.1:5000
+```
 
-## 4. Forgot-password flow without an email server
+Open your browser and go to:
+```
+http://localhost:5000
+```
 
-By default there's no SMTP server configured, so "forgot password" runs in
-**dev mode**: instead of emailing a link, the app shows the reset link
-directly on the page (and logs it) so you can test the whole flow locally.
-To send real emails, fill in `MAIL_SERVER` / `MAIL_USERNAME` / `MAIL_PASSWORD`
-in `.env`.
+---
 
-## 5. Running the tests
+## 🎬 How to Use the App
 
-The test suite uses `mongomock` (an in-memory MongoDB stand-in) so you don't
-need a real database running to test the app:
+1. Click **"Get a ticket"** to sign up with a username, email, and password
+2. You'll be logged in automatically and taken to the **Analyzer** page
+3. Paste any movie review text into the box and click **"Print my stub"**
+4. You'll see a verdict (POSITIVE/NEGATIVE) with a confidence percentage
+5. Check your **Profile** to see your stats and history
+6. Try **Edit Profile** to update your bio or change your password
+7. Try **Logout**, then **Forgot Password** to test the reset flow (since there's no email server configured, the reset link will appear directly on the page)
 
-```bash
+---
+
+## 🧪 Running Tests (Optional)
+
+To verify everything works without needing a real MongoDB connection:
+
+```
 pip install mongomock
 python tests/test_smoke.py
 ```
 
-## Project layout
+This runs 25 automated checks covering signup, login, predictions, profile edits, and more.
+
+---
+
+## 📁 Project Structure
 
 ```
-app.py                 App factory / entry point
-config.py               Env-based configuration
-extensions.py            MongoDB connection + indexes
-auth_utils.py             Password hashing, login_required, CSRF, reset tokens
-ml.py                      Loads the trained model and exposes predict_sentiment()
-train_model.py              Script to (re)train the model from a CSV
-nlp/text_clean.py            Shared text-cleaning pipeline (used by training + app)
-blueprints/auth.py            signup / login / logout / forgot & reset password
-blueprints/main.py             landing / analyzer / about / profile / edit profile
-templates/                      Jinja templates
-static/css/style.css             Design system (cinema ticket-stub theme)
-static/js/main.js                 Small UI interactions
-models/                            Saved vectorizer.pkl + model.pkl
-nltk_data/                          Bundled NLTK data (stopwords, tokenizer)
-tests/test_smoke.py                  End-to-end route test using mongomock
+sentiment-app/
+├── app.py                  → Main entry point
+├── config.py                → Configuration settings
+├── extensions.py             → MongoDB connection setup
+├── auth_utils.py              → Authentication helper functions
+├── ml.py                       → Loads the ML model
+├── train_model.py               → Script to retrain the model (optional)
+├── nlp/text_clean.py             → Text cleaning logic
+├── blueprints/auth.py              → Login/signup/logout routes
+├── blueprints/main.py               → Analyzer/profile/about routes
+├── templates/                        → HTML pages
+├── static/css/style.css               → Styling
+├── static/js/main.js                   → Frontend interactions
+├── models/                              → Saved trained ML model
+├── requirements.txt                      → Python dependencies
+├── .env.example                           → Environment variable template
+└── tests/test_smoke.py                     → Automated tests
 ```
 
-## Notes on security
+---
 
-This is a learning/portfolio project, not a hardened production app. Before
-deploying anywhere public, at minimum: set a strong random `SECRET_KEY`,
-serve over HTTPS, add rate limiting on login/signup/forgot-password, and
-consider a proper CSRF library (Flask-WTF) and account lockout after repeated
-failed logins.
+## ❓ Troubleshooting
+
+| Problem | Solution |
+|---|---|
+| `ModuleNotFoundError` | Make sure your virtual environment is activated and you ran `pip install -r requirements.txt` |
+| MongoDB connection error | Check that `mongod` is running (local) or your Atlas connection string is correct in `.env` |
+| Port 5000 already in use | Close other apps using that port, or change the port in `app.py` |
+| scikit-learn build error (Windows) | Use `pip install scikit-learn --only-binary :all:` before installing requirements |
+
+---
+
